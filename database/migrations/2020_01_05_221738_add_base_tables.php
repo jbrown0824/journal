@@ -26,10 +26,6 @@ class AddBaseTables extends Migration
         Schema::create('group_users', function (Blueprint $table) {
             $table->unsignedBigInteger('group_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('name');
-            $table->string('url')->nullable();
-            $table->boolean('can_join')->default(true);
-            $table->timestamps();
 
             $table->primary([ 'group_id', 'user_id' ]);
         });
@@ -37,6 +33,7 @@ class AddBaseTables extends Migration
         Schema::create('prompts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('group_id');
+            $table->string('prompt');
             $table->timestamps();
 
             $table->foreign('group_id')->references('id')->on('groups');
@@ -48,6 +45,7 @@ class AddBaseTables extends Migration
             $table->unsignedBigInteger('group_id');
             $table->string('prompt');
             $table->string('answer');
+            $table->string('url')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
