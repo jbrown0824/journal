@@ -36,4 +36,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function groups() {
+        return $this->belongsToMany(Group::class, 'group_users');
+    }
+
+    public function core_feelings() {
+        return $this->hasMany(CoreFeeling::class);
+    }
+
+    public function prompt_answers() {
+        return $this->hasMany(PromptAnswer::class);
+    }
 }
