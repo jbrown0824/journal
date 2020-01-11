@@ -12,9 +12,15 @@
 */
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/home');
+    }
     return view('welcome');
 });
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/day/{date}/review', 'DailyController@index');
+Route::get('/day/{date}', 'DailyController@create');
+Route::post('/day/{date}', 'DailyController@store');

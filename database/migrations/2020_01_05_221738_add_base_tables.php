@@ -43,6 +43,8 @@ class AddBaseTables extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('group_id');
+            $table->unsignedBigInteger('prompt_id');
+            $table->date('date');
             $table->string('prompt');
             $table->string('answer');
             $table->string('url')->nullable();
@@ -50,6 +52,7 @@ class AddBaseTables extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('group_id')->references('id')->on('groups');
+            $table->foreign('prompt_id')->references('id')->on('prompts');
         });
 
         Schema::create('core_feelings', function (Blueprint $table) {

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    public $fillable = [ 'owner_id', 'name' ];
+
     public function owner() {
         return $this->belongsTo(User::class, 'owner_id');
     }

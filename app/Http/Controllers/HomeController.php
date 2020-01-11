@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +24,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+
+        return view('home', compact('today', 'yesterday'));
     }
 }
