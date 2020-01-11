@@ -21,6 +21,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/day/{date}/review', 'DailyController@index');
-Route::get('/day/{date}', 'DailyController@create');
-Route::post('/day/{date}', 'DailyController@store');
+Route::get('/day/{date}/review/{group?}/{user?}', 'DailyReviewController@index')->name('review');
+Route::get('/day/{date}/{group?}', 'DailyController@show');
+Route::post('/day/{date}/{group?}', 'DailyController@store');

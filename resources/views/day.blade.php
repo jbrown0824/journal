@@ -10,7 +10,7 @@
             @if ($lastUpdated)<em>Last saved {{ \Carbon\Carbon::parse($lastUpdated)->format('h:iA') }}</em>@endif
             </p>
 
-            <form action="/day/{{ $date->format('Y-m-d') }}" method="post">
+            <form action="/day/{{ $date->toDateString() }}" method="post">
                 {{ csrf_field() }}
 
                 @if (session()->has('error'))

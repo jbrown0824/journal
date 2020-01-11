@@ -3,46 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Group;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class DailyController extends Controller
-{
+class DailyController extends Controller {
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('auth');
     }
 
     /**
-     * Display a listing of the resource.
+     * Display the specified resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($date)
-    {
-        $date = Carbon::parse($date);
-        $group = $this->getGroup();
-
-        $answers = auth()->user()->prompt_answers()
-            ->whereDate('date', $date->toDateString())->where('group_id', $group->id)
-            ->get()->keyBy('prompt_id');
-
-        return view('day_review', compact('date', 'group', 'answers'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create($date, Group $group = null)
-    {
+    public function show($date, Group $group = null) {
         $date = Carbon::parse($date);
         $group = $this->getGroup($group);
 
@@ -57,7 +38,7 @@ class DailyController extends Controller
         }
 
         if ($date->isBefore(Carbon::today())) {
-            return redirect('/day/' . $date->format('Y-m-d') . '/review');
+            return redirect('/day/' . $date->toDateString() . '/review');
         }
 
 //        return [ $group, $date ];
@@ -68,11 +49,10 @@ class DailyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $date)
-    {
+    public function store(Request $request, $date) {
         $date = Carbon::parse($date);
         $group = $this->getGroup();
 
@@ -93,52 +73,13 @@ class DailyController extends Controller
             );
         }
 
-        return back()->with('success', true);
-    }
+        $this->setJournalStreak($user);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return redirect()->route('review', [
+            'date' => $dateString,
+            'group' => $group->id,
+            'user' => $user->id
+        ])->with('success', true);
     }
 
     protected function getGroup(Group $group = null) {
@@ -146,5 +87,23 @@ class DailyController extends Controller
         $group->load('prompts');
 
         return $group;
+    }
+
+    /**
+     * @param User $user
+     */
+    protected function setJournalStreak(User $user): void {
+        $days = 1;
+        if ($user->last_journaled_at) {
+            if ($user->last_journaled_at->isToday()) return; // Already saved today
+            if ($user->last_journaled_at->isYesterday()) {
+                $days += $user->consecutive_days;
+            }
+        }
+
+        $user->consecutive_days = $days;
+        $user->last_journaled_at = Carbon::now();
+
+        $user->save();
     }
 }

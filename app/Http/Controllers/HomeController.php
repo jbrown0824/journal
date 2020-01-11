@@ -24,9 +24,16 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
         $today = Carbon::today();
         $yesterday = Carbon::yesterday();
 
-        return view('home', compact('today', 'yesterday'));
+        $feelings = $user->core_feelings;
+
+        $groups = $user->groups()->with([ 'users' => function($query) use ($user) {
+            $query->where('user_id', '!=', $user->id);
+        }])->get();
+
+        return view('home', compact('today', 'yesterday', 'feelings', 'groups'));
     }
 }
