@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CurrentFeelings;
 use App\Group;
 use App\User;
 use Carbon\Carbon;
@@ -28,8 +29,12 @@ class DailyReviewController extends Controller {
      */
     public function index($date, Group $group = null, User $user = null) {
         $date = Carbon::parse($date);
+        $previous = $date->clone()->subDay();
+        $next = $date->clone()->addDay();
         $user = $user ?: auth()->user();
         $group = $group ?: $user->groups()->first();
+
+        $feelings = (new CurrentFeelings($user))->execute($date);
 
         $answers = $user->prompt_answers()
             ->whereDate('date', $date->toDateString())->where('group_id', $group->id)
@@ -37,6 +42,6 @@ class DailyReviewController extends Controller {
 
         $lastUpdated = $answers->max('updated_at') ?: false;
 
-        return view('day_review', compact('date', 'group', 'answers', 'user', 'lastUpdated'));
+        return view('day_review', compact('date', 'previous', 'next', 'feelings', 'group', 'answers', 'user', 'lastUpdated'));
     }
 }

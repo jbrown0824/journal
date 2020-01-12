@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CurrentFeelings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,7 @@ class HomeController extends Controller
         $today = Carbon::today();
         $yesterday = Carbon::yesterday();
 
-        $feelings = $user->core_feelings;
+        $feelings = (new CurrentFeelings($user))->execute();
 
         $groups = $user->groups()->with([ 'users' => function($query) use ($user) {
             $query->where('user_id', '!=', $user->id);

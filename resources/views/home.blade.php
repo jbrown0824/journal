@@ -16,6 +16,7 @@
                             @empty
                             <li><em>None Specified Yet!</em></li>
                             @endforelse
+                            <li><i><a href="/day/{{ $today->toDateString() }}" class="small">Edit</a></i></li>
                         </ul>
                     </div>
                 </div>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CurrentFeelings;
+use App\Actions\UpdateCurrentFeelings;
 use App\Group;
 use App\User;
 use Carbon\Carbon;
@@ -26,9 +28,11 @@ class DailyController extends Controller {
     public function show($date, Group $group = null) {
         $date = Carbon::parse($date);
         $group = $this->getGroup($group);
+        $user = auth()->user();
+        $feelings = (new CurrentFeelings($user))->execute($date, true);
 
-        $answers = auth()->user()->prompt_answers()
-            ->whereDate('date', $date->toDateString())->where('group_id', $group->id)
+        $answers = $user->prompt_answers()
+            ->whereDate('date', $date)->where('group_id', $group->id)
             ->get()->keyBy('prompt_id');
 
         $lastUpdated = $answers->max('updated_at') ?: false;
@@ -43,7 +47,7 @@ class DailyController extends Controller {
 
 //        return [ $group, $date ];
 
-        return view('day', compact('date', 'group', 'answers', 'lastUpdated'));
+        return view('day', compact('date', 'feelings', 'group', 'answers', 'lastUpdated'));
     }
 
     /**
@@ -72,6 +76,8 @@ class DailyController extends Controller {
                 [ 'prompt' => $prompt->prompt, 'answer' => $answer, 'url' => $url ]
             );
         }
+
+        (new UpdateCurrentFeelings($user))->execute($request['feelings'] ?? [], $request['new_feelings'] ?? []);
 
         $this->setJournalStreak($user);
 

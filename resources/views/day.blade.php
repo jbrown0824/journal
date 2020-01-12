@@ -25,6 +25,24 @@
                     </div>
                 @endif
 
+                <h3>Core Desired Feelings</h3>
+
+                @foreach ($feelings as $index => $feeling)
+                    <div class="form-group">
+                        <label>Feeling #{{ $index + 1 }}</label><br>
+                        <input class="form-control" name="feelings[{{ $feeling->id }}]" value="{{ $feeling->feeling }}">
+                    </div>
+                @endforeach
+
+                @for ($i = count($feelings); $i < 5; $i++)
+                <div class="form-group">
+                    <label>Feeling #{{ $i + 1 }}</label><br>
+                    <input class="form-control" name="new_feelings[]">
+                </div>
+                @endfor
+
+                <h3>Group Prompts</h3>
+
                 @foreach ($group->prompts as $prompt)
 
                     <div class="form-group">
