@@ -21,9 +21,9 @@ class CurrentFeelings {
         return $this->user->core_feelings()
             ->whereDate('start_date', '<=', $date)
             ->where(function ($query) use ($date, $excludeEnded) {
-                $query->whereDate('end_date', '>=', $date);
+                $query->whereNull('end_date');
                 if (!$excludeEnded) {
-                    $query->orWhereNull('end_date');
+                    $query->orWhereDate('end_date', '>=', $date);
                 }
             })
             ->get();

@@ -28,16 +28,17 @@ class UpdateCurrentFeelings {
 
             if ($feeling != $current->feeling) {
                 // Feeling has been modified or deleted
-                if (Carbon::parse($current->start_date)->isToday()) {
+                if (Carbon::parse($current->start_date)->isToday() && !empty($feeling)) {
                     // They are just updating a feeling they created earlier today
                     $current->feeling = $feeling;
                     $current->save();
                 } else {
                     $current->end_date = Carbon::now();
 
-                    if (empty($feeling)) {
+                    if (!empty($feeling)) {
                         $this->create($feeling);
                     }
+                    
                     $current->save();
                 }
             }
