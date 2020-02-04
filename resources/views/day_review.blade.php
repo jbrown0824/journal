@@ -51,9 +51,9 @@
                 @foreach ($group->prompts as $prompt)
                     <h4>{{ $prompt->prompt }}</h4>
                     @if (isset($answers[ $prompt->id ][ 'answer' ]))
-                        <p>{{ $answers[ $prompt->id ][ 'answer' ] }}</p>
+                    <p>{!! nl2br($answers[ $prompt->id ][ 'answer' ]) !!}</p>
                     @else
-                        <p><em>None Given</em></p>
+                    <p><em>None Given</em></p>
                     @endif
                 @endforeach
             @endif
